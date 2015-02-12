@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 
 // console.log(Loader.minify(path.join(__dirname, "../"), Loader.scanDir(path.join(__dirname, "../views"))));
-describe("Asset loader", function () {
+describe("[Asset loader]", function () {
   it("Constructor", function () {
     var loader = new Loader("/assets/scripts/jqueryplugin.min.js");
     loader.script.should.have.property("target", "/assets/scripts/jqueryplugin.min.js");
@@ -295,7 +295,9 @@ describe("Asset loader", function () {
   });
 
   it("less should work well", function () {
-    Loader.transformLess('.class{width: (1 + 1)}').should.equal('.class {\n  width: 2;\n}\n');
+    Loader.transformLess('.class{width: (1 + 1)}', function(result){
+      result.should.equal('.class {\n  width: 2;\n}\n');
+    });
   });
 
   it("less should work with exception", function () {
@@ -305,7 +307,9 @@ describe("Asset loader", function () {
   });
 
   it("stylus should work well", function () {
-    Loader.transformStylus('.class{width: (1 + 1)}').should.equal('.class {\n  width: 2;\n}\n');
+    Loader.transformStylus('.class{width: (1 + 1)}', function(result){
+      result.should.equal('.class {\n  width: 2;\n}\n');
+    });
   });
 
   it("stylus should work with exception", function () {
@@ -329,83 +333,89 @@ describe("Asset loader", function () {
       {"target": "/assets/min.js", "assets": ["/assets/hehe.js", "/assets/ganma.js"]},
       {"target": "/assets/min.css", "assets": ["/assets/hehe.css", "/assets/ganma.css", "/assets/home.less"]}
     ];
-    var minified = Loader.minify(__dirname, arr);
-    minified.should.eql([
-      { target: '/assets/min.js',
-        assets: [ '/assets/hehe.js', '/assets/ganma.js' ],
-        min: '/assets/min.99d5311f.min.js',
-        debug: '/assets/min.99d5311f.debug.js'
-      },
-      { target: '/assets/min.css',
-        assets: [ '/assets/hehe.css', '/assets/ganma.css', '/assets/home.less' ],
-        min: '/assets/min.0d525130.min.css',
-        debug: '/assets/min.0d525130.debug.css'
-      }
-    ]);
+    Loader.minify(__dirname, arr, function(minified){
+      minified.should.eql([
+        { target: '/assets/min.js',
+          assets: [ '/assets/hehe.js', '/assets/ganma.js' ],
+          min: '/assets/min.99d5311f.min.js',
+          debug: '/assets/min.99d5311f.debug.js'
+        },
+        { target: '/assets/min.css',
+          assets: [ '/assets/hehe.css', '/assets/ganma.css', '/assets/home.less' ],
+          min: '/assets/min.0d525130.min.css',
+          debug: '/assets/min.0d525130.debug.css'
+        }
+      ]);
 
-    var map = Loader.map(minified);
-    var minJS = path.join(__dirname, map["/assets/min.js"]);
-    var minCSS = path.join(__dirname, map["/assets/min.css"]);
+      var map = Loader.map(minified);
+      var minJS = path.join(__dirname, map["/assets/min.js"]);
+      var minCSS = path.join(__dirname, map["/assets/min.css"]);
 
-    fs.readFileSync(minJS, 'utf-8').should.equal('!function(){console.log("Hello World!")}();\n!function(){console.log("Hello World!")}();\n');
-    fs.readFileSync(minCSS, 'utf-8').should.equal(".foo{float:left}\n.bar{float:left}\n.class{width:2}\n");
+      fs.readFileSync(minJS, 'utf-8').should.equal('!function(){console.log("Hello World!")}();\n!function(){console.log("Hello World!")}();\n');
+      fs.readFileSync(minCSS, 'utf-8').should.equal(".foo{float:left}\n.bar{float:left}\n.class{width:2}\n");
+    });
+
   });
 
   it("minify should work well with coffee", function () {
     var arr = [
       {"target": "/assets/coffee.js", "assets": ["/assets/js.coffee"]}
     ];
-    var minified = Loader.minify(__dirname, arr);
-    minified.should.eql([
-      { target: '/assets/coffee.js',
-        assets: [ '/assets/js.coffee'],
-        min: '/assets/coffee.b8b735e8.min.js',
-        debug: '/assets/coffee.b8b735e8.debug.js'
-      }
-    ]);
+    Loader.minify(__dirname, arr, function(minified){
+      minified.should.eql([
+        { target: '/assets/coffee.js',
+          assets: [ '/assets/js.coffee'],
+          min: '/assets/coffee.b8b735e8.min.js',
+          debug: '/assets/coffee.b8b735e8.debug.js'
+        }
+      ]);
 
-    var map = Loader.map(minified);
-    var minJS = path.join(__dirname, map["/assets/coffee.js"]);
+      var map = Loader.map(minified);
+      var minJS = path.join(__dirname, map["/assets/coffee.js"]);
 
-    fs.readFileSync(minJS, 'utf-8').should.equal('(function(){var n;n=function(n){return n*n}}).call(this);\n');
+      fs.readFileSync(minJS, 'utf-8').should.equal('(function(){var n;n=function(n){return n*n}}).call(this);\n');
+    });
+
   });
 
   it("minify should work well with coffee", function () {
     var arr = [
       {"target": "/assets/coffee.js", "assets": ["/assets/js.coffee"]}
     ];
-    var minified = Loader.minify(__dirname, arr);
-    minified.should.eql([
-      { target: '/assets/coffee.js',
-        assets: [ '/assets/js.coffee'],
-        min: '/assets/coffee.b8b735e8.min.js',
-        debug: '/assets/coffee.b8b735e8.debug.js'
-      }
-    ]);
+    Loader.minify(__dirname, arr, function(minified){
+      minified.should.eql([
+        { target: '/assets/coffee.js',
+          assets: [ '/assets/js.coffee'],
+          min: '/assets/coffee.b8b735e8.min.js',
+          debug: '/assets/coffee.b8b735e8.debug.js'
+        }
+      ]);
 
-    var map = Loader.map(minified);
-    var minJS = path.join(__dirname, map["/assets/coffee.js"]);
+      var map = Loader.map(minified);
+      var minJS = path.join(__dirname, map["/assets/coffee.js"]);
 
-    fs.readFileSync(minJS, 'utf-8').should.equal('(function(){var n;n=function(n){return n*n}}).call(this);\n');
+      fs.readFileSync(minJS, 'utf-8').should.equal('(function(){var n;n=function(n){return n*n}}).call(this);\n');
+    });
   });
 
   it("minify should work well with stylus", function () {
     var arr = [
       {"target": "/assets/home.css", "assets": ["/assets/home.styl"]}
     ];
-    var minified = Loader.minify(__dirname, arr);
-    minified.should.eql([
-      { target: '/assets/home.css',
-        assets: [ '/assets/home.styl'],
-        min: '/assets/home.cb2d2217.min.css',
-        debug: '/assets/home.cb2d2217.debug.css'
-      }
-    ]);
+    Loader.minify(__dirname, arr, function(minified){
+      minified.should.eql([
+        { target: '/assets/home.css',
+          assets: [ '/assets/home.styl'],
+          min: '/assets/home.cb2d2217.min.css',
+          debug: '/assets/home.cb2d2217.debug.css'
+        }
+      ]);
 
-    var map = Loader.map(minified);
-    var minJS = path.join(__dirname, map["/assets/home.css"]);
+      var map = Loader.map(minified);
+      var minJS = path.join(__dirname, map["/assets/home.css"]);
 
-    fs.readFileSync(minJS, 'utf-8').should.equal('.class{width:2}\n');
+      fs.readFileSync(minJS, 'utf-8').should.equal('.class{width:2}\n');
+    });
   });
 
   it("minify should work with exception", function () {

@@ -24,13 +24,14 @@ var scaned = Loader.scanDir(viewsDir);
 console.log("Scaned.");
 
 // combo？md5 hash
-var minified = Loader.minify(baseDir, scaned);
-console.log(minified);
-console.log("Compile static assets done.");
+Loader.minify(baseDir, scaned, function(minified){
+  console.log(minified);
+  console.log("Compile static assets done.");
 
-// write the assets mapping into assets.json
-var assets = path.join(baseDir, 'assets.json');
-console.log("assets.json is here: " + assets);
-fs.writeFileSync(assets, JSON.stringify(Loader.map(minified)));
-console.log("write assets.json done. assets.json: ");
-console.log(fs.readFileSync(assets, 'utf-8'));
+  // write the assets mapping into assets.json
+  var assets = path.join(baseDir, 'assets.json');
+  console.log("assets.json is here: " + assets);
+  fs.writeFileSync(assets, JSON.stringify(Loader.map(minified)));
+  console.log("write assets.json done. assets.json: ");
+  console.log(fs.readFileSync(assets, 'utf-8'));
+});
